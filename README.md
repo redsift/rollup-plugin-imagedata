@@ -9,14 +9,14 @@ Import metadata and base64 encoded image content from JPG, PNG, GIF, WEBP and SV
 ## Installation
 
 ```bash
-npm install --save-dev rollup-plugin-imagedata
+$ npm install --save-dev "@redsift/rollup-plugin-imagedata"
 ```
 
-## Usage
+## Building via ES6 modules
 
 ```js
 // rollup.config.js
-import image from 'rollup-plugin-imagedata';
+import image from '@redsift/rollup-plugin-imagedata';
 
 export default {
   entry: './index.js',
@@ -26,6 +26,24 @@ export default {
   ]
 };
 ```
+
+## Building via require()
+
+```js
+// gulpfile.js
+var imagedata = require('@redsift/rollup-plugin-imagedata')
+gulp.task('task', () => {  
+  return rollup({
+            ...
+            plugins: [ 
+                        imagedata.image(),
+                        ...
+                      ]
+        })
+        .pipe(source('index.js', 'src'))
+```
+
+## Usage
 
 ```js
 // use.js
@@ -39,6 +57,20 @@ console.log(`My image is ${width} pixels wide`);
 Note that base64 makes the images 33% larger than the size on disk.
 
 Tree shaking via rollup will ensure large payloads such as the base64 string will be stripped from the bundle if not imported or used by your code.
+
+## Options
+
+You may pass a few options to image().
+
+```js
+  image({
+    include: [ ... ], // files to include
+    exclude:[ ... ], // files to exclude
+    patch: false,   // attempt to fix up non compliant assets e.g. SVG files with no XML headers
+    ignoreParsingErrors: true   // Warn but do not fail if files cannot be parsed as images. 
+                                // In this case metadata will be missing
+  });
+```
 
 ## ImageMagick
 

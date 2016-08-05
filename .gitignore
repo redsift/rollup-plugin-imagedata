@@ -8,3 +8,5 @@ npm-debug.log
 tests/_rollup_test.js
 
 
+
+tests/broken.svg

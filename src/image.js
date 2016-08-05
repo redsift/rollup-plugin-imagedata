@@ -5,6 +5,8 @@ import * as gm from 'gm';
 
 const im = gm.subClass({imageMagick: true});
 
+const svgXml = new Buffer('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n');
+
 const whitelist = {
 	'.jpg':  'image/jpeg',
 	'.jpeg': 'image/jpeg',
@@ -14,8 +16,18 @@ const whitelist = {
 	'.svg':  'image/svg+xml'
 };
 
+function warn(s) {
+    // Replace with proper reporting API when available
+
+    /* eslint-disable no-console */
+    console.warn(s);
+    /* eslint-enable no-console */
+}
+
 export default function image(opts = {}) {
     const filter = createFilter(opts.include, opts.exclude);
+    const patch = opts.patch || true;
+    const ignore = opts.ignoreParsingErrors || false;
 
     return {
         name: 'imagedata',
@@ -24,18 +36,37 @@ export default function image(opts = {}) {
             if (filter(img)) {
                 let mime = whitelist[extname(img).toLowerCase()];
                 if (mime != null) {
-                    const file = readFileSync(img);
+                    let file = readFileSync(img);
+
+                    if (mime === whitelist['.svg'] && patch) {
+                        // ImageMagick SVG delegate is quite fussy about the XML header
+                        if (file[0] !== svgXml[0] || file[1] !== svgXml[1]) {
+                            warn(`SVG file ${img} does not include XML header, patching`);
+                            file = Buffer.concat([ svgXml, file ]);
+                        }
+                    }
 
                     return new Promise(function (ok, ko) {
                         im(file, img).identify(function (err, data) {
                             if (err) {
-                                ko(err);
-                                return;
-                            }
-
-                            const imMime = data['Mime type'];
-                            if (imMime !== undefined) {
-                                mime = imMime;
+                                if (ignore) {
+                                    data = {
+                                        size: {
+                                            width: null,
+                                            height: null
+                                        },
+                                        format: null
+                                    }
+                                    warn(err);
+                                } else {
+                                    ko(err);
+                                    return;
+                                }
+                            } else {
+                                const imMime = data['Mime type'];
+                                if (imMime !== undefined) {
+                                    mime = imMime;
+                                }
                             }
                             const code = `export const width = ${data.size.width};
                                     export const height = ${data.size.height};

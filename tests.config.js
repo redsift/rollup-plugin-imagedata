@@ -4,7 +4,7 @@ import buble from 'rollup-plugin-buble';
 export default {
 	entry: './tests/test.js',
 	plugins: [ 
-        image(),
+        image({ ignoreParsingErrors: (process.env.CIRCLECI !== undefined) }),
         buble() 
     ]
 };

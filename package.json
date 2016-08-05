@@ -1,9 +1,9 @@
 {
   "name": "@redsift/rollup-plugin-imagedata",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Import image data and metadata into a rollup JavaScript bundle.",
   "keywords": [
-    "rollup",
+    "rollup-plugin",
     "modules",
     "image",
     "metadata"
@@ -14,7 +14,7 @@
     "name": "Rahul Powar",
     "url": "https://medium.com/@rahulpowar"
   },
-  "main": "distribution/rollup-plugin-imagedata.umd-es2015.js",
+  "main": "distribution/rollup-plugin-imagedata.cjs.js",
   "jsnext:main": "distribution/rollup-plugin-imagedata.js",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "scripts": {
     "build": "npm run build:cjs && npm run build:es",
-    "build:cjs": "rollup -c -o distribution/rollup-plugin-imagedata.cjs-es2015.js -f cjs",
+    "build:cjs": "rollup -c -o distribution/rollup-plugin-imagedata.cjs.js -f cjs",
     "build:es": "rollup -c -o distribution/rollup-plugin-imagedata.js -f es",
     "pretest": "npm outdated && npm run build",
     "lint": "eslint index.js src",
