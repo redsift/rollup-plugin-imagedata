@@ -5,7 +5,7 @@ import * as JPEG from './test.jpg'
 import * as SVG from './test.svg'
 import * as CASE from './case.PNG'
 import * as SVGALT from './test-alt.svg'
-import * as WEBP from './test.webp'
+import * as WEBP from './broken.svg'
 
 [
     { test: 'WEBP', data: WEBP  },

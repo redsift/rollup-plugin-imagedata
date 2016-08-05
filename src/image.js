@@ -68,11 +68,12 @@ export default function image(opts = {}) {
                                     mime = imMime;
                                 }
                             }
-                            const code = `export const width = ${data.size.width};
-                                    export const height = ${data.size.height};
-                                    export const format = '${data.format}';
-                                    export const mime = '${mime}';
-                                    export const base64 = 'data:${mime};base64,${file.toString('base64')}';`;
+                            const code = `
+export const width = ${data.size.width};
+export const height = ${data.size.height};
+export const format = ${data.format ? `'${data.format}'` : null};
+export const mime = '${mime}';
+export const base64 = 'data:${mime};base64,${file.toString('base64')}';`;
                             ok({ 
                                 ast: {
                                     type: 'Program',
