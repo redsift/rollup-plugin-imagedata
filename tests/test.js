@@ -2,14 +2,16 @@
 
 import * as PNG from './test.png'
 import * as JPEG from './test.jpg'
-import * as WEBP from './test.webp'
 import * as SVG from './test.svg'
 import * as CASE from './case.PNG'
 
+// Disable testing for WebP
+// import * as WEBP from './test.webp'
+
 [
+//  { test: 'WEBP', data: WEBP  },
     { test: 'PNG', data: PNG    },
     { test: 'JPEG', data: JPEG  },
-    { test: 'WEBP', data: WEBP  },
     { test: 'SVG', data: SVG    },
     { test: 'CASE', data: CASE  },       
 ].forEach(c => {
