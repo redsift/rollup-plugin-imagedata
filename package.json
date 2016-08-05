@@ -1,0 +1,44 @@
+{
+  "name": "@redsift/rollup-plugin-imagedata",
+  "version": "0.0.1",
+  "description": "Import image data and metadata into a rollup JavaScript bundle.",
+  "keywords": [
+    "rollup",
+    "modules",
+    "image",
+    "metadata"
+  ],
+  "homepage": "https://github.com/redsift/rollup-plugin-imagedata",
+  "license": "MIT",
+  "author": {
+    "name": "Rahul Powar",
+    "url": "https://medium.com/@rahulpowar"
+  },
+  "main": "distribution/rollup-plugin-imagedata.umd-es2015.js",
+  "jsnext:main": "distribution/rollup-plugin-imagedata.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/redsift/rollup-plugin-imagedata.git"
+  },
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:es",
+    "build:cjs": "rollup -c -o distribution/rollup-plugin-imagedata.cjs-es2015.js -f cjs",
+    "build:es": "rollup -c -o distribution/rollup-plugin-imagedata.js -f es",
+    "pretest": "npm outdated && npm run build",
+    "lint": "eslint index.js src",
+    "test": "rollup -c tests.config.js -o tests/_rollup_test.js -f cjs && cd tests && node _rollup_test.js && cd .. && npm run lint",
+    "prepublish": "npm run build"
+  },
+  "dependencies": {
+    "gm": "~1.23.0",
+    "minimatch": "~3.0.2"
+  },
+  "devDependencies": {
+    "eslint": "^3.2.2",
+    "rollup": "^0.34.3",
+    "rollup-plugin-buble": "^0.12.1",
+    "rollup-plugin-json": "^2.0.1",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-pluginutils": "~1.5.1"
+  }
+}
