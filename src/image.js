@@ -2,8 +2,10 @@ import { readFileSync } from 'fs';
 import { extname } from 'path';
 import { createFilter } from 'rollup-pluginutils';
 import * as gm from 'gm';
+import AsyncLock from 'async-lock';
 
 const im = gm.subClass({imageMagick: true});
+const lock = new AsyncLock();
 
 const svgXml = new Buffer('<?xml version="1.0" encoding="UTF-8" standalone="no"?>\n');
 
@@ -28,6 +30,7 @@ export default function image(opts = {}) {
     const filter = createFilter(opts.include, opts.exclude);
     const patch = opts.patch || true;
     const ignore = opts.ignoreParsingErrors || false;
+    const timeout = opts.timeout || 5000;
 
     return {
         name: 'imagedata',
@@ -47,45 +50,50 @@ export default function image(opts = {}) {
                     }
 
                     return new Promise(function (ok, ko) {
-                        im(file, img).identify(function (err, data) {
-                            if (err) {
-                                if (ignore) {
-                                    data = {
-                                        size: {
-                                            width: null,
-                                            height: null
-                                        },
-                                        format: null
+                        lock.acquire('im', function() {
+                            setTimeout(() => ko(new Error(`timeout on identify of file '${img}`)), timeout);
+
+                            im(file, img).identify(function (err, data) {
+                                if (err) {
+                                    if (ignore) {
+                                        data = {
+                                            size: {
+                                                width: null,
+                                                height: null
+                                            },
+                                            format: null
+                                        }
+                                        warn(err);
+                                    } else {
+                                        ko(err);
+                                        return;
                                     }
-                                    warn(err);
                                 } else {
-                                    ko(err);
-                                    return;
+                                    const imMime = data['Mime type'];
+                                    if (imMime !== undefined) {
+                                        mime = imMime;
+                                    }
                                 }
-                            } else {
-                                const imMime = data['Mime type'];
-                                if (imMime !== undefined) {
-                                    mime = imMime;
-                                }
-                            }
-                            const code = `
+                                const code = `
 export const width = ${data.size.width};
 export const height = ${data.size.height};
 export const format = ${data.format ? `'${data.format}'` : null};
 export const mime = '${mime}';
 export const base64 = 'data:${mime};base64,${file.toString('base64')}';`;
-                            ok({ 
-                                ast: {
-                                    type: 'Program',
-                                    sourceType: 'module',
-                                    start: 0,
-                                    end: null,
-                                    body: []
-                                }, 
-                                code: code, 
-                                map: { mappings: '' } 
+                                ok({ 
+                                    ast: {
+                                        type: 'Program',
+                                        sourceType: 'module',
+                                        start: 0,
+                                        end: null,
+                                        body: []
+                                    }, 
+                                    code: code, 
+                                    map: { mappings: '' } 
+                                });
                             });
-                        });
+                        })
+                        .catch(ko);
                     });
                 }
             }

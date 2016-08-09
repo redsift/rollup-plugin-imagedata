@@ -10,7 +10,7 @@ export default {
             exclude: [  ]
         }),
         nodeResolve({
-            skip: [ 'gm', 'minimatch' ],
+            skip: [ 'gm', 'minimatch', 'async-lock' ],
             jsnext: true
         }),
         buble() 

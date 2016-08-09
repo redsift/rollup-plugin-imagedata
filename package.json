@@ -1,6 +1,6 @@
 {
   "name": "@redsift/rollup-plugin-imagedata",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Import image data and metadata into a rollup JavaScript bundle.",
   "keywords": [
     "rollup-plugin",
@@ -30,6 +30,7 @@
     "prepublish": "npm run build"
   },
   "dependencies": {
+    "async-lock": "~0.3.8",
     "gm": "~1.23.0",
     "minimatch": "~3.0.2"
   },
